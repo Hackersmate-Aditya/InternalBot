@@ -25,7 +25,7 @@ client = OpenAI()
 assistant_id = "asst_jTnYZT8jOc3YUuKPUD0K9f9I"
 thread = None
 
-@app.route('/ask', methods=['POST'])
+@app.route('/', methods=['GET','POST'])
 @basic_auth.required
 def ask_question():
     try:
@@ -71,4 +71,4 @@ def ask_question():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(port=5000)
+    app.run(debug=True)
