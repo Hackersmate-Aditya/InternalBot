@@ -16,8 +16,8 @@ load_dotenv()
 app = Flask(__name__)
 # app.config['BASIC_AUTH_USERNAME'] = os.getenv("PASSWORD")
 # app.config['BASIC_AUTH_PASSWORD'] = os.getenv("USERNAME")
-app.config['BASIC_AUTH_USERNAME'] = 'aa'
-app.config['BASIC_AUTH_PASSWORD'] = 'aaa'
+app.config['BASIC_AUTH_USERNAME'] = 'Esteem'
+app.config['BASIC_AUTH_PASSWORD'] = '29~DE6gjNJ&J'
 basic_auth = BasicAuth(app)
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
