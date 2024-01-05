@@ -22,7 +22,7 @@ basic_auth = BasicAuth(app)
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI()
-assistant_id = "asst_jTnYZT8jOc3YUuKPUD0K9f9I"
+assistant_id = "asst_PQhmvRHRqlllXtysPdf1vQV3"
 thread = None
 
 @app.route('/', methods=['GET','POST'])
