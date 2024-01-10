@@ -1,3 +1,4 @@
+#Dependences
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 from openai import OpenAI
