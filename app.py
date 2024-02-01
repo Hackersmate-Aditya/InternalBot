@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 import openai
 import os
+import re
 from dotenv import load_dotenv
 from openai import OpenAI
 from flask_basicauth import BasicAuth
@@ -70,7 +71,9 @@ def ask_question():
         messages = client.beta.threads.messages.list(thread_id=thread.id)
         latest_message = messages.data[0]
         text = latest_message.content[0].text.value
+        text = re.sub(r'[\[\]\(\)\{\}]', '', text)
         text = text.replace('\n', ' ')
+
 
         return jsonify({'response': text, 'thread_id': thread.id})
 
