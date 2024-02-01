@@ -32,6 +32,11 @@ def ask_question():
     try:
         global thread
         user_question = request.json.get('user_question')
+        user_location = request.json.get('location')
+        user_doj = request.json.get('yearOfJoining')
+
+        user_question = user_question + ",My location is " + user_location + " , My date of joining" + user_doj
+        
         a_thread = request.json.get('thread_id')
 
         if not a_thread:
