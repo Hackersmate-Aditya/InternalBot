@@ -25,13 +25,12 @@ basic_auth = BasicAuth(app)
 openai.api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI()
 assistant_id = "asst_PQhmvRHRqlllXtysPdf1vQV3"
-thread = None
 
 @app.route('/', methods=['GET','POST'])
 @basic_auth.required
 def ask_question():
     try:
-        global thread
+        thread = None
         user_question = request.json.get('user_question')
         user_location = request.json.get('location')
         user_doj = request.json.get('yearOfJoining')
@@ -39,6 +38,8 @@ def ask_question():
         user_question = user_question + ",My location is " + user_location + " , My date of joining" + user_doj
         
         a_thread = request.json.get('thread_id')
+        a_thread = None
+
 
         if not a_thread:
             if not thread:
