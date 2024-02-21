@@ -1,4 +1,4 @@
-#Dependences
+# Installing Dependences
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -9,12 +9,12 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from flask_basicauth import BasicAuth
 
-
+#loading environment
 load_dotenv()
 import time
 
 load_dotenv()
-
+#creating basic auth
 app = Flask(__name__)
 # app.config['BASIC_AUTH_USERNAME'] = os.getenv("PASSWORD")
 # app.config['BASIC_AUTH_PASSWORD'] = os.getenv("USERNAME")
