@@ -75,8 +75,19 @@ def ask_question():
         text = re.sub(r'[\[\]\(\)\{\}]', '', text)
         text = text.replace('\n', ' ')
 
+        # Check if the response starts with "https"
+        if text.startswith("https"):
+            # List of random texts to choose from
+            random_texts = ["Sure!, Here's the Url you can refer to:", "To answer your query, you can refer to below mentioned URL that will provide more information on this", "Check this URL below for more info"]
+
+            # Choose a random text from the list
+            random_text = random.choice(random_texts)
+
+            # Concatenate the random text with the GPT-3 response
+            text = f"{random_text} {text}"
 
         return jsonify({'response': text, 'thread_id': thread.id})
+ 
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
