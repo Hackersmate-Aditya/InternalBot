@@ -30,28 +30,15 @@ assistant_id = "asst_wKTvrc2keK7keUy5LYy18XkZ"
 @basic_auth.required
 def ask_question():
     try:
-        thread = None
         user_question = request.json.get('user_question')
         user_location = request.json.get('location')
         user_doj = request.json.get('yearOfJoining')
 
-        user_question = user_question + ",My location is " + user_location + " , My date of joining" + user_doj
-        
-        a_thread = request.json.get('thread_id')
-        a_thread = None
+        user_question = user_question + ", My location is " + str(user_location) + " , My date of joining" + str(user_doj)
 
-
-        if not a_thread:
-            if not thread:
-                thread = client.beta.threads.create()
-                print(thread.id)
-                print(thread)
-        else:
-            if not thread:
-                thread = client.beta.threads.create()
-            thread.id = a_thread
-            print(thread.id)
-            print(thread)
+        # Create a new thread for each question
+        thread = client.beta.threads.create()
+        print(thread.id)
 
         message = client.beta.threads.messages.create(
             thread_id=thread.id,
@@ -84,10 +71,9 @@ def ask_question():
             random_text = random.choice(random_texts)
 
             # Concatenate the random text with the GPT-3 response
-            text = f"{random_text} {text}"
+            text = f"{random_text} {text.strip()}"
 
         return jsonify({'response': text, 'thread_id': thread.id})
- 
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
