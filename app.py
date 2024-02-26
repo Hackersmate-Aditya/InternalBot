@@ -23,13 +23,13 @@ app.config['BASIC_AUTH_PASSWORD'] = '29~DE6gjNJ&J'
 basic_auth = BasicAuth(app)
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
-client = OpenAI()
 assistant_id = "asst_wKTvrc2keK7keUy5LYy18XkZ"
 
 @app.route('/', methods=['GET','POST'])
 @basic_auth.required
 def ask_question():
     try:
+        client = OpenAI()
         user_question = request.json.get('user_question')
         user_location = request.json.get('location')
         user_doj = request.json.get('yearOfJoining')
@@ -61,6 +61,7 @@ def ask_question():
         text = latest_message.content[0].text.value
         text = re.sub(r'[\[\]\(\)\{\}]', '', text)
         text = text.replace('\n', ' ')
+        client = None
 
         # Check if the response starts with "https"
         if text.strip().startswith("https"):
