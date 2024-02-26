@@ -33,10 +33,8 @@ def ask_question():
         user_question = request.json.get('user_question')
         user_location = request.json.get('location')
         user_doj = request.json.get('yearOfJoining')
-
-        user_question = user_question + ", My location is " + user_location + " , My date of joining" + user_doj
         user_question = user_question.lower()
-
+        user_question = user_question + ", My location is " + user_location + " , My Year Of Joining is " + user_doj
 
         # Create a new thread for each question
         thread = client.beta.threads.create()
