@@ -10,7 +10,7 @@ from openai import OpenAI
 from flask_basicauth import BasicAuth
 import random
 #loading environment
-load_dotenv()
+import gc
 import time
 
 load_dotenv()
@@ -64,6 +64,8 @@ def ask_question():
         text = re.sub(r'[\[\]\(\)\{\}]', '', text)
         text = text.replace('\n', ' ')
         client = None
+        gc.collect()
+
 
         # Check if the response starts with "https"
         if text.strip().startswith("https"):
