@@ -8,7 +8,7 @@ import re
 from dotenv import load_dotenv
 from openai import OpenAI
 from flask_basicauth import BasicAuth
-
+import random
 #loading environment
 load_dotenv()
 import time
