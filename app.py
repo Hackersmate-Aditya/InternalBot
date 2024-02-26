@@ -76,7 +76,7 @@ def ask_question():
         text = text.replace('\n', ' ')
 
         # Check if the response starts with "https"
-        if text.startswith("https"):
+        if text.strip().startswith("https"):
             # List of random texts to choose from
             random_texts = ["Sure!, Here's the Url you can refer to:", "To answer your query, you can refer to below mentioned URL that will provide more information on this", "Check this URL below for more info"]
 
