@@ -33,6 +33,7 @@ def ask_question():
         user_question = request.json.get('user_question')
         user_location = request.json.get('location')
         user_doj = request.json.get('yearOfJoining')
+        user_doj = int(user_doj)
         user_question = user_question.lower()
         # Create a new thread for each question
         thread = client.beta.threads.create()
@@ -74,26 +75,26 @@ def ask_question():
             # Concatenate the random text with the GPT-3 response
             text = f"{random_text} {text.strip()}"
 
-        # if "https://infobeans_admin_committee" in text:
-        #     if user_location == "Pune":
-        #         text = text.replace("https://infobeans_admin_committee","https://docs.google.com/forms/d/e/1FAIpQLSemXT1GOuBftcj9w2-0W3NZRXGL0eCSWZ9dDsj9uy7Dv5PDcw/viewform")
-        #     elif user_location in ["Indore","Chennai","Vadodara", "Bangalore"]:
-        #         text = text.replace("https://infobeans_admin_committee","https://docs.google.com/forms/d/e/1FAIpQLSfsR415c0QuF5F9bEXi6RSrP1pSzkGX2Z8To3SkqGuqkbXUxg/viewform?pli=1")
+        if "https://infobeans_admin_committee" in text:
+            if user_location == "Pune":
+                text = text.replace("https://infobeans_admin_committee","https://docs.google.com/forms/d/e/1FAIpQLSemXT1GOuBftcj9w2-0W3NZRXGL0eCSWZ9dDsj9uy7Dv5PDcw/viewform")
+            elif user_location in ["Indore","Chennai","Vadodara", "Bangalore"]:
+                text = text.replace("https://infobeans_admin_committee","https://docs.google.com/forms/d/e/1FAIpQLSfsR415c0QuF5F9bEXi6RSrP1pSzkGX2Z8To3SkqGuqkbXUxg/viewform?pli=1")
 
-        # if "https://payroll.creatingwow.in/" in text:
-        #     if user_location == "Chennai":
-        #         text = text.replace("https://payroll.creatingwow.in/","https://payroll.creatingwow.in/chennai")
-        #     elif user_location == "Pune":
-        #         text = text.replace("https://payroll.creatingwow.in/","https://payroll.creatingwow.in/sezpune")
-        #     elif user_location == "Vadodara":
-        #         text = text.replace("https://payroll.creatingwow.in/","https://payroll.creatingwow.in/unit_3")
-        #     elif user_location == "Bangalore":
-        #         text = text.replace("https://payroll.creatingwow.in/","https://payroll.creatingwow.in/unit_3")
-        #     elif user_location == "Indore":
-        #         if user_doj >= 2011:
-        #             text = text.replace("https://payroll.creatingwow.in/", "https://payroll.creatingwow.in/unit_3")
-        #         elif user_doj < 2011:
-        #             text = text.replace("https://payroll.creatingwow.in/", "https://payroll.creatingwow.in/SEZINDORE")
+        if "https://payroll.creatingwow.in/" in text:
+            if user_location == "Chennai":
+                text = text.replace("https://payroll.creatingwow.in/","https://payroll.creatingwow.in/chennai")
+            elif user_location == "Pune":
+                text = text.replace("https://payroll.creatingwow.in/","https://payroll.creatingwow.in/sezpune")
+            elif user_location == "Vadodara":
+                text = text.replace("https://payroll.creatingwow.in/","https://payroll.creatingwow.in/unit_3")
+            elif user_location == "Bangalore":
+                text = text.replace("https://payroll.creatingwow.in/","https://payroll.creatingwow.in/unit_3")
+            elif user_location == "Indore":
+                if user_doj >= 2011:
+                    text = text.replace("https://payroll.creatingwow.in/", "https://payroll.creatingwow.in/unit_3")
+                elif user_doj < 2011:
+                    text = text.replace("https://payroll.creatingwow.in/", "https://payroll.creatingwow.in/SEZINDORE")
 
 
         return jsonify({'response': text, 'thread_id': thread.id})
