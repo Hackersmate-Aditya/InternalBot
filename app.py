@@ -23,7 +23,7 @@ app.config['BASIC_AUTH_PASSWORD'] = '29~DE6gjNJ&J'
 basic_auth = BasicAuth(app)
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
-assistant_id = "asst_wKTvrc2keK7keUy5LYy18XkZ"
+assistant_id = "asst_PQhmvRHRqlllXtysPdf1vQV3"
 
 @app.route('/', methods=['GET','POST'])
 @basic_auth.required
