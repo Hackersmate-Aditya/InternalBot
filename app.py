@@ -1,38 +1,45 @@
-import time
+# Installing Dependences
 from flask import Flask, request, jsonify
+from dotenv import load_dotenv
 from openai import OpenAI
-from flask_basicauth import BasicAuth
+import openai
 import os
 import re
-import random
-import asyncio
 from dotenv import load_dotenv
+from openai import OpenAI
+from flask_basicauth import BasicAuth
+import random
+#loading environment
 import gc
-import asyncio
+import time
 
-# Loading environment variables
 load_dotenv()
-
-# Creating basic auth
+#creating basic auth
 app = Flask(__name__)
+# app.config['BASIC_AUTH_USERNAME'] = os.getenv("PASSWORD")
+# app.config['BASIC_AUTH_PASSWORD'] = os.getenv("USERNAME")
 app.config['BASIC_AUTH_USERNAME'] = 'Esteem'
 app.config['BASIC_AUTH_PASSWORD'] = '29~DE6gjNJ&J'
 basic_auth = BasicAuth(app)
 
-# OpenAI setup
-OpenAI.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI()
 assistant_id = "asst_PQhmvRHRqlllXtysPdf1vQV3"
-# assistant_id = "asst_N6auFrBmUxrqSFwUHZYQ0xnq"
 thread = None
 
-async def process_question(user_question, user_location, user_doj, thread):
+
+@app.route('/', methods=['GET','POST'])
+@basic_auth.required
+def ask_question():
     try:
-        # time.sleep(3.5)
-        print("Inside process_question")
+        global thread
+        user_question = request.json.get('user_question')
+        user_location = request.json.get('location')
+        user_doj = request.json.get('yearOfJoining')
+        user_doj = int(user_doj)
         user_question = user_question.lower()
 
-        a_thread = None  # Adjust as needed for the asynchronous structure
+        a_thread = request.json.get('thread_id')
 
         if not a_thread:
             if not thread:
@@ -41,7 +48,7 @@ async def process_question(user_question, user_location, user_doj, thread):
                 print(thread)
         else:
             if not thread:
-                thread = client.beta.threads.create()
+                 thread = client.beta.threads.create()
             thread.id = a_thread
             print(thread.id)
             print(thread)
@@ -50,51 +57,37 @@ async def process_question(user_question, user_location, user_doj, thread):
             thread_id=thread.id,
             role="user",
             content=user_question,timeout=3
+
         )
-        print("After message")
 
         run = client.beta.threads.runs.create(
             thread_id=thread.id,
-            assistant_id=assistant_id,timeout=3 
-            # print("Inside run ")
+            assistant_id=assistant_id,timeout=3
         )
-        print("After run")
 
-
-        while True:    
-            # run = await retrieve_run_status(thread_id=thread.id, run_id=run.id)                 
-            run =  client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id,timeout=3)
-            print(run.status)
-            if run.status in ("queued", "in_progress"):
-                print(f"Run status: {run.status}")
-                await asyncio.sleep(1)  # Wait for 1 second
-            else:
-                print("Run status completed")
+        while True:
+            run = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id,timeout=3)
+            if run.status == "completed":
                 break
-
-        # run = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id)
-        #     print("Inside true ")
-        #     print("Run status",run.status)
-        #     if run.status == "completed":
-        #         break
-        #         time.sleep(3)   
-        print("After true")    
-
+        
         messages = client.beta.threads.messages.list(thread_id=thread.id,timeout=3)
         latest_message = messages.data[0]
         text = latest_message.content[0].text.value
         text = re.sub(r'[\[\]\(\)\{\}]', '', text)
         text = text.replace('\n', ' ')
+        gc.collect()
 
+
+        # Check if the response starts with "https"
         if text.strip().startswith("https"):
-            random_texts = ["Sure!, Here's the URL you can refer to:", "To answer your query, you can refer to below mentioned URL that will provide more information on this", "Check this URL below for more info"]
+            # List of random texts to choose from
+            random_texts = ["Sure!, Here's the Url you can refer to:", "To answer your query, you can refer to below mentioned URL that will provide more information on this", "Check this URL below for more info"]
+
+            # Choose a random text from the list
             random_text = random.choice(random_texts)
+
+            # Concatenate the random text with the GPT-3 response
             text = f"{random_text} {text.strip()}"
-            print(text)
-
-        if text.count("https") > 1:
-            text = f"Here are several URLs pertinent to your inquiry. Please select the one that best matches your needs. To ensure greater accuracy in the results, please furnish additional details in your queries {text}"
-
 
         if "https://infobeans_admin_committee" in text:
             if user_location == "Pune":
@@ -116,37 +109,9 @@ async def process_question(user_question, user_location, user_doj, thread):
                     text = text.replace("https://payroll.creatingwow.in/", "https://payroll.creatingwow.in/unit_3")
                 elif user_doj < 2011:
                     text = text.replace("https://payroll.creatingwow.in/", "https://payroll.creatingwow.in/SEZINDORE")
-    
-    
-        return {'response': text, 'thread_id': thread.id}
 
-    except Exception as e:
-        return {'error': str(e)}
 
-# Route for handling questions asynchronously
-@app.route('/', methods=['GET','POST'])
-@basic_auth.required
-def ask_question():
-    try:
-        start_time = time.time()
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-
-        user_question = request.json.get('user_question')
-        user_location = request.json.get('location')
-        user_doj = request.json.get('yearOfJoining')
-
-        # text, new_thread_id = asyncio.run(process_question(user_question, user_location, user_doj, thread))
-
-        # Run the asynchronous function within the event loop
-        result = loop.run_until_complete(
-            process_question(user_question, user_location, user_doj, thread)
-        )
-        print("--- %s seconds ---" % (time.time() - start_time))
-
-        # loop.close()
-        # return jsonify({'response': text, 'thread_id': new_thread_id})
-        return jsonify(result)
+        return jsonify({'response': text, 'thread_id': thread.id})
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
