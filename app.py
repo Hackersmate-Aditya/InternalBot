@@ -124,7 +124,7 @@ async def process_question(user_question, user_location, user_doj, thread):
         return {'error': str(e)}
 
 # Route for handling questions asynchronously
-@app.route('/', methods=['POST','Get'])
+@app.route('/', methods=['GET','POST'])
 @basic_auth.required
 def ask_question():
     try:
