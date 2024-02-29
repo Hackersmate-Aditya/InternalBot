@@ -56,20 +56,21 @@ def ask_question():
         message = client.beta.threads.messages.create(
             thread_id=thread.id,
             role="user",
-            content=user_question
+            content=user_question,timeout=3
+
         )
 
         run = client.beta.threads.runs.create(
             thread_id=thread.id,
-            assistant_id=assistant_id
+            assistant_id=assistant_id,timeout=3
         )
 
         while True:
-            run = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id)
+            run = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id,timeout=3)
             if run.status == "completed":
                 break
         
-        messages = client.beta.threads.messages.list(thread_id=thread.id)
+        messages = client.beta.threads.messages.list(thread_id=thread.id,timeout=3)
         latest_message = messages.data[0]
         text = latest_message.content[0].text.value
         text = re.sub(r'[\[\]\(\)\{\}]', '', text)
