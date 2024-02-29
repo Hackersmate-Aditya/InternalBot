@@ -23,22 +23,35 @@ app.config['BASIC_AUTH_PASSWORD'] = '29~DE6gjNJ&J'
 basic_auth = BasicAuth(app)
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
-assistant_id = "asst_PQhmvRHRqlllXtysPdf1vQV3"
 client = OpenAI()
+assistant_id = "asst_PQhmvRHRqlllXtysPdf1vQV3"
+thread = None
 
 
 @app.route('/', methods=['GET','POST'])
 @basic_auth.required
 def ask_question():
     try:
+        global thread
         user_question = request.json.get('user_question')
         user_location = request.json.get('location')
         user_doj = request.json.get('yearOfJoining')
         user_doj = int(user_doj)
         user_question = user_question.lower()
-        # Create a new thread for each question
-        thread = client.beta.threads.create()
-        print(thread.id)
+
+        a_thread = request.json.get('thread_id')
+
+        if not a_thread:
+            if not thread:
+                thread = client.beta.threads.create()
+                print(thread.id)
+                print(thread)
+        else:
+            if not thread:
+                 thread = client.beta.threads.create()
+            thread.id = a_thread
+            print(thread.id)
+            print(thread)
 
         message = client.beta.threads.messages.create(
             thread_id=thread.id,
@@ -55,7 +68,7 @@ def ask_question():
             run = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id)
             if run.status == "completed":
                 break
-
+        
         messages = client.beta.threads.messages.list(thread_id=thread.id)
         latest_message = messages.data[0]
         text = latest_message.content[0].text.value
