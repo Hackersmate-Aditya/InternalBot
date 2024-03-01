@@ -35,6 +35,13 @@ async def process_question(user_question, user_location, user_doj, thread):
 
         a_thread = None  # Adjust as needed for the asynchronous structure
 
+        def create_new_thread():
+            new_thread = client.beta.threads.create()
+            new_message = client.beta.threads.messages.create(
+                thread_id=new_thread.id, content=user_question, role="user"
+            )
+            return new_thread
+
         if not a_thread:
             if not thread:
                 thread = client.beta.threads.create()
