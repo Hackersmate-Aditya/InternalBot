@@ -25,34 +25,38 @@ OpenAI.api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI()
 assistant_id = "asst_PQhmvRHRqlllXtysPdf1vQV3"
 # assistant_id = "asst_N6auFrBmUxrqSFwUHZYQ0xnq"
-thread = None
 
-async def process_question(user_question, user_location, user_doj, thread):
+# thread = None
+
+async def process_question(user_question, user_location, user_doj):
     try:
         # time.sleep(3.5)
         print("Inside process_question")
+        thread = client.beta.threads.create(timeout=2)
+        print("After thread create")
         user_question = user_question.lower()
 
-        a_thread = None  # Adjust as needed for the asynchronous structure
+        # a_thread = None  
 
         def create_new_thread():
-            new_thread = client.beta.threads.create()
+            new_thread = client.beta.threads.create(timeout=2)
             new_message = client.beta.threads.messages.create(
+                timeout=2,
                 thread_id=new_thread.id, content=user_question, role="user"
             )
             return new_thread
 
-        if not a_thread:
-            if not thread:
-                thread = client.beta.threads.create()
-                print(thread.id)
-                print(thread)
-        else:
-            if not thread:
-                thread = client.beta.threads.create()
-            thread.id = a_thread
-            print(thread.id)
-            print(thread)
+        # if not a_thread:
+        #     if not thread:
+        #         thread = client.beta.threads.create()
+        #         print(thread.id)
+        #         print(thread)
+        # else:
+        #     if not thread:
+        #         thread = client.beta.threads.create()
+        #     thread.id = a_thread
+        #     print(thread.id)
+        #     print(thread)
 
         message = client.beta.threads.messages.create(
             thread_id=thread.id,
@@ -71,7 +75,7 @@ async def process_question(user_question, user_location, user_doj, thread):
 
         while True:    
             try:
-                run = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id, timeout=10)
+                run = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id, timeout=3)
                 if run.status == "completed":
                     break
             except openai.error.OpenAIError as e:
@@ -155,7 +159,7 @@ def ask_question():
 
         # Run the asynchronous function within the event loop
         result = loop.run_until_complete(
-            process_question(user_question, user_location, user_doj, thread)
+            process_question(user_question, user_location, user_doj)
         )
         print("--- %s seconds ---" % (time.time() - start_time))
 
