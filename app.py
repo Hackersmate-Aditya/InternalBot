@@ -116,6 +116,8 @@ async def process_question(user_question, user_location, user_doj, thread):
                     text = text.replace("https://payroll.creatingwow.in/", "https://payroll.creatingwow.in/unit_3")
                 elif user_doj < 2011:
                     text = text.replace("https://payroll.creatingwow.in/", "https://payroll.creatingwow.in/SEZINDORE")
+
+        text = text.replace("https://payroll.creatingwow.in/unit_3#/", "https://payroll.creatingwow.in/unit_3")
     
 
         return {'response': text, 'thread_id': thread.id}
