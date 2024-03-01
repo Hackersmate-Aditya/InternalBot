@@ -123,7 +123,7 @@ async def process_question(user_question, user_location, user_doj, thread):
 
         text = text.replace("https://payroll.creatingwow.in/unit_3#/", "https://payroll.creatingwow.in/unit_3")
     
-
+        gc.collect()
         return {'response': text, 'thread_id': thread.id}
 
     except Exception as e:
