@@ -5,6 +5,7 @@ from flask_basicauth import BasicAuth
 import os
 import re
 import random
+import openai
 import asyncio
 from dotenv import load_dotenv
 import gc
@@ -62,23 +63,26 @@ async def process_question(user_question, user_location, user_doj, thread):
 
 
         while True:    
-            # run = await retrieve_run_status(thread_id=thread.id, run_id=run.id)                 
-            run =  client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id,timeout=3)
-            print(run.status)
-            if run.status in ("queued", "in_progress"):
-                print(f"Run status: {run.status}")
-                await asyncio.sleep(1)  # Wait for 1 second
-            else:
-                print("Run status completed")
-                break
-
-        # run = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id)
-        #     print("Inside true ")
-        #     print("Run status",run.status)
-        #     if run.status == "completed":
-        #         break
-        #         time.sleep(3)   
-        print("After true")    
+            try:
+                run = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id, timeout=5)
+                if run.status == "completed":
+                    break
+            except openai.error.OpenAIError as e:
+                # Handle the case where the run is not found (404 error)
+                if 'No run found' in str(e):
+                    print(f"Run not found. Creating a new thread.")
+                    client.beta.threads.delete(thread.id)
+                    thread = create_new_thread()
+                    message = client.beta.threads.messages.create(
+                        thread_id=thread.id, content=user_question, role="user"
+                    )
+                    run = client.beta.threads.runs.create(
+                        thread_id=thread.id,
+                        assistant_id=assistant_id
+                    )
+                else:
+                    raise
+    
 
         messages = client.beta.threads.messages.list(thread_id=thread.id,timeout=3)
         latest_message = messages.data[0]
