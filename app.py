@@ -50,13 +50,13 @@ async def process_question(user_question, user_location, user_doj, thread):
         message = client.beta.threads.messages.create(
             thread_id=thread.id,
             role="user",
-            content=user_question,timeout=3
+            content=user_question,timeout=2
         )
         print("After message")
 
         run = client.beta.threads.runs.create(
             thread_id=thread.id,
-            assistant_id=assistant_id,timeout=3 
+            assistant_id=assistant_id,timeout=2 
             # print("Inside run ")
         )
         print("After run")
@@ -64,7 +64,7 @@ async def process_question(user_question, user_location, user_doj, thread):
 
         while True:    
             try:
-                run = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id, timeout=5)
+                run = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id, timeout=10)
                 if run.status == "completed":
                     break
             except openai.error.OpenAIError as e:
